@@ -3,18 +3,27 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package org.lw5hr.adif.forms;
-
-import org.lw5hr.adif.model.CsvLine;
+import jakarta.transaction.SystemException;
+import org.hibernate.Session;
+import org.lw5hr.adif.model.Country;
+import org.lw5hr.adif.model.Event;
 import org.lw5hr.adif.model.Qso;
 import org.lw5hr.adif.tool.utils.ADIFReader;
+import org.lw5hr.adif.tool.utils.StatsUtil;
+import org.lw5hr.adif.hibernate.hibernateUtil;
 import org.lw5hr.adif.tool.utils.UBNReader;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+
 
 /**
  *
@@ -31,12 +40,24 @@ public class UbnReader extends javax.swing.JFrame {
     /**
      * Creates new form UbnReader
      */
-    public UbnReader() {
+    public UbnReader() throws SystemException {
         initComponents();
         openAdiFileChooser
                 .setFileFilter(new FileNameExtensionFilter("ADIF Files", "ADI"));
         openUbnFileChooser
                 .setFileFilter(new FileNameExtensionFilter("UBN Files", "txt"));
+
+        Session session = hibernateUtil.getSessionFactory().openSession();
+
+        // now lets pull events from the database and list them
+        session = hibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        List result = session.createQuery( "from Qso" ).list();
+        for ( Qso qso : (List<Qso>) result ) {
+            System.out.println( "Qso (" + qso.getOperator() + ") : " + qso.getTime() );
+        }
+        session.getTransaction().commit();
+        session.close();
     }
 
     /**
@@ -55,9 +76,8 @@ public class UbnReader extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         readAdifButton = new javax.swing.JButton();
         processButton = new javax.swing.JButton();
-        outPutPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        outPutText = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
+        total = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("UBN Cross Checker by LW5HR");
@@ -102,6 +122,31 @@ public class UbnReader extends javax.swing.JFrame {
             }
         });
 
+        total.setText("Total By Hour");
+        total.setToolTipText("");
+        total.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                totalActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(total)
+                .addContainerGap(179, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(total)
+                .addContainerGap(131, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -118,47 +163,31 @@ public class UbnReader extends javax.swing.JFrame {
                     .addComponent(UbnButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(processButton, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(UbnButton))
-                .addGap(28, 28, 28)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(readAdifButton)
-                    .addComponent(processButton))
-                .addContainerGap(29, Short.MAX_VALUE))
-        );
-
-        outPutPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-
-        outPutText.setColumns(20);
-        outPutText.setRows(5);
-        jScrollPane1.setViewportView(outPutText);
-
-        javax.swing.GroupLayout outPutPanelLayout = new javax.swing.GroupLayout(outPutPanel);
-        outPutPanel.setLayout(outPutPanelLayout);
-        outPutPanelLayout.setHorizontalGroup(
-            outPutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(outPutPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1)
-                .addContainerGap())
-        );
-        outPutPanelLayout.setVerticalGroup(
-            outPutPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(outPutPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(UbnButton))
+                        .addGap(28, 28, 28)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(readAdifButton)
+                            .addComponent(processButton)))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -167,11 +196,7 @@ public class UbnReader extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 289, Short.MAX_VALUE))
-                    .addComponent(outPutPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -179,9 +204,7 @@ public class UbnReader extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(outPutPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addContainerGap(331, Short.MAX_VALUE))
         );
 
         pack();
@@ -207,6 +230,18 @@ public class UbnReader extends javax.swing.JFrame {
         ADIFReader reader = new ADIFReader(this.adiFile);
         try {
             qsos = reader.read();
+            Map<String, Long> totals = qsos.stream()
+                    .filter(q -> q.getOperator() != null)
+                    .collect(Collectors.groupingBy(Qso::getOperator, Collectors.counting()));
+
+            totals.forEach((l, y) -> {
+                System.out.print("Total "+ l + " = " + y);
+                System.out.print(System.getProperty("line.separator"));
+            });
+
+            StatsUtil stats = new StatsUtil();
+            stats.totalQsoByHourAndOperator(qsos);
+
             UbnButton.setEnabled(true);
         } catch (Exception ex) {
             Logger.getLogger(UBNReader.class.getName())
@@ -217,16 +252,16 @@ public class UbnReader extends javax.swing.JFrame {
 
     private void processButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_processButtonActionPerformed
         // TODO add your handling code here:
-        outPutText.setLineWrap(true);
-        UBNReader UBNReader = new UBNReader();
-        List<String> list = UBNReader.readUbnFile(ubnFile, qsos);
-        list.forEach(o -> {
-            outPutText.append(o + "\n");
-        });
         UbnButton.setEnabled(false);
         processButton.setEnabled(false);
         readAdifButton.setEnabled(false);
     }//GEN-LAST:event_processButtonActionPerformed
+
+    private void totalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalActionPerformed
+       // TODO add your handling code here:
+  
+       
+    }//GEN-LAST:event_totalActionPerformed
 
     /**
      * @param args the command line arguments
@@ -258,7 +293,11 @@ public class UbnReader extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new UbnReader().setVisible(true);
+                try {
+                    new UbnReader().setVisible(true);
+                } catch (SystemException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
@@ -268,11 +307,10 @@ public class UbnReader extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JPanel outPutPanel;
-    private javax.swing.JTextArea outPutText;
     private javax.swing.JButton processButton;
     private javax.swing.JButton readAdifButton;
+    private javax.swing.JButton total;
     // End of variables declaration//GEN-END:variables
 }

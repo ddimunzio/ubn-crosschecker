@@ -4,6 +4,7 @@
  */
 package org.lw5hr.adif.model;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,6 +15,9 @@ import java.util.List;
  * @author diego
  */
 public class Country {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private String name;
 
@@ -76,6 +80,12 @@ public class Country {
     public void setKnownCalls(List<String> KnownCalls) {
         this.KnownCalls = KnownCalls;
     }
-    
-    
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

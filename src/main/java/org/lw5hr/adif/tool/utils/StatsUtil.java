@@ -31,6 +31,26 @@ public class StatsUtil {
                 .collect(Collectors.groupingBy(BarChartHelper::date));
     }
 
+    public void totalQsoByHourAndOperator(List<Qso> qsos) {
+        Map<Object, Map<Object, Map<Object, List<Qso>>>> totalByHour = qsos.stream()
+                .collect(Collectors.groupingBy(q -> q.getDate(),Collectors.groupingBy(q -> q.getTime().getHour(), Collectors.groupingBy(q -> q.getOperator()))));
+        totalByHour.forEach((day, hourOperatorList) -> {
+            System.out.print(System.getProperty("line.separator"));
+            System.out.print("Day "+ day);
+            System.out.print(System.getProperty("line.separator"));
+            hourOperatorList.forEach((Hour, operatorsQso) -> {
+                System.out.print(" HOUR "+ Hour);
+                System.out.print(System.getProperty("line.separator"));
+                operatorsQso.forEach((operator, qso) -> {
+                    System.out.print(" OPERATOR "+ operator + " = " + qso.size());
+                    System.out.print(System.getProperty("line.separator"));
+                });
+            });
+            System.out.print(System.getProperty("line.separator"));
+        });
+    }
+
+
     public void groupByMinutes(List<Qso> qsos) {
         final Map<Integer, IntSummaryStatistics> a = qsos.stream()
                 .collect(Collectors.groupingBy(q -> q.getTime().getMinute(), Collectors.summarizingInt(x -> 1)));

@@ -26,15 +26,8 @@ public class UBNReader {
         final Integer BAND_CHANGE_VIOLATION = 4;
         final Integer UNIQUE_CALL = 5;
         final Integer LOST_MULTI = 5;
-        Map<String, Long> totals = qsos.stream()
-                .filter(q -> q.getOperator() != null)
-                .collect(Collectors.groupingBy(Qso::getOperator, Collectors.counting()));
-        totals.forEach((l, y) -> {
-            System.out.print("Total "+ l + " = " + y);
-            System.out.print(System.getProperty("line.separator"));
-        });
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         Integer currentReport = 0;
         try {
             reader = new BufferedReader(new FileReader(filePath));
