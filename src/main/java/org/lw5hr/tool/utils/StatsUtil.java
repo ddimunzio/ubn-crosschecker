@@ -1,7 +1,7 @@
-package org.lw5hr.adif.tool.utils;
+package org.lw5hr.tool.utils;
 
-import org.lw5hr.adif.charts.BarChartHelper;
-import org.lw5hr.adif.model.Qso;
+import org.lw5hr.charts.BarChartHelper;
+import org.lw5hr.model.Qso;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

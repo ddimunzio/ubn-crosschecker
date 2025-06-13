@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package org.lw5hr.adif.tool.utils;
+package org.lw5hr.tool.utils;
 
-import org.lw5hr.adif.model.CtyDat;
-import org.lw5hr.adif.model.CtyPrefix;
-import org.lw5hr.adif.model.Prefixes;
+import org.lw5hr.model.CtyDat;
+import org.lw5hr.model.CtyPrefix;
+import org.lw5hr.model.Prefixes;
 
 import java.io.File;
 import java.io.FileNotFoundException;

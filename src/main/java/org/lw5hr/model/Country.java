@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package org.lw5hr.adif.model;
+package org.lw5hr.model;
 
 import javax.persistence.*;
 import java.util.ArrayList;

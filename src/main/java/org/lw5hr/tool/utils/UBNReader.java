@@ -1,7 +1,7 @@
-package org.lw5hr.adif.tool.utils;
+package org.lw5hr.tool.utils;
 
-import org.lw5hr.adif.model.CsvLine;
-import org.lw5hr.adif.model.Qso;
+import org.lw5hr.model.Qso;
+import org.lw5hr.model.UbnResult;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class UBNReader {
     public List<String> readUbnFile(File filePath, List<Qso> qsos) {
         List<String> result = new ArrayList<>();
+        UbnResult ubnResult = new UbnResult();
         BufferedReader reader;
         final Integer NIL = 1;
         final Integer INCORRECT_CALL = 2;
@@ -42,12 +43,14 @@ public class UBNReader {
                             .filter(q -> UbnDateTime.getHour() == q.getTime().getHour())
                             .filter(q -> UbnDateTime.getMinute() == q.getTime().getMinute()).findFirst();
                     if (qso.isPresent()) {
-                        if (currentReport == INCORRECT_CALL) {
+                        if (currentReport.equals(INCORRECT_CALL)) {
                             System.out.println(qso.get().toString() + "," + ubnLine.get(9));
                             result.add(qso.get().toString() + "," + ubnLine.get(9));
-                        } else if (currentReport == INCORRECT_EXCHANGE_INFO) {
+                            ubnResult.getIncorrectCall().add(qso.get());
+                        } else if (currentReport.equals(INCORRECT_EXCHANGE_INFO)) {
                             System.out.println(qso.get().toString() + "," + ubnLine.get(7) + "," + ubnLine.get(9));
                             result.add(qso.get().toString() + "," + ubnLine.get(7) + "," + ubnLine.get(9));
+                            ubnResult.getIncorrectExchangeInfo().add(qso.get());
                         } else {
                             System.out.println(qso.get().toString());
                             result.add(qso.get().toString());
@@ -91,7 +94,10 @@ public class UBNReader {
                         line = reader.readLine();
                     } else if (line.equalsIgnoreCase("*******************  Multipliers by Band  ********************")) {
                         currentReport = 0;
+                    }  else if (line.equalsIgnoreCase("************************ Multipliers *************************")){
+                        currentReport = 0;
                     }
+
                 }
 
             }
@@ -99,6 +105,89 @@ public class UBNReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Map<String, Long> totalByOperator = qsos.stream()
+                .collect(Collectors.groupingBy(Qso::getOperator, Collectors.counting()))
+                .entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+        System.out.println("Total per operator: " + totalByOperator);
+
+       Map<String, Long> incorrectCallPerOperator = ubnResult.getIncorrectCall().stream()
+            .collect(Collectors.groupingBy(Qso::getOperator, Collectors.counting()))
+            .entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (e1, e2) -> e1,
+                LinkedHashMap::new
+            ));
+        System.out.println("Incorrect call per operator: " + incorrectCallPerOperator);
+
+        Map<String, Long> exchangePerOperator = ubnResult.getIncorrectExchangeInfo().stream()
+            .collect(Collectors.groupingBy(Qso::getOperator, Collectors.counting()))
+            .entrySet().stream()
+            .sorted(Map.Entry.comparingByKey())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (e1, e2) -> e1,
+                LinkedHashMap::new
+            ));
+        System.out.println("Bad Exchange per operator: " + exchangePerOperator);
+
+        Map<String, Double> errorPercentagePerOperator = new LinkedHashMap<>();
+
+        for (String operator : totalByOperator.keySet()) {
+            long total = totalByOperator.getOrDefault(operator, 0L);
+            long invalidCalls = incorrectCallPerOperator.getOrDefault(operator, 0L);
+            long badExchanges = exchangePerOperator.getOrDefault(operator, 0L);
+            long totalErrors = invalidCalls + badExchanges;
+            double percentage = total > 0 ? (totalErrors * 100.0) / total : 0.0;
+            errorPercentagePerOperator.put(operator, percentage);
+        }
+
+        System.out.println("Invalid Calls per operator chart:");
+        for (Map.Entry<String, Long> entry : incorrectCallPerOperator.entrySet()) {
+            String operator = entry.getKey();
+            long count = entry.getValue();
+            int barLength = (int) (count); // adjust scale if needed
+            String bar = "#".repeat(barLength);
+            System.out.printf("%-10s | %-5d | %s%n", operator, count, bar);
+        }
+
+        System.out.println("Bad Exchange per operator chart:");
+        for (Map.Entry<String, Long> entry : exchangePerOperator.entrySet()) {
+            String operator = entry.getKey();
+            long count = entry.getValue();
+            int barLength = (int) (count); // adjust scale if needed
+            String bar = "#".repeat(barLength);
+            System.out.printf("%-10s | %-5d | %s%n", operator, count, bar);
+        }
+
+        System.out.println("QSOs per operator chart:");
+        for (Map.Entry<String, Long> entry : totalByOperator.entrySet()) {
+            String operator = entry.getKey();
+            long total = entry.getValue();
+            int barLength = (int) (total / 2); // adjust scale as needed
+            String bar = "#".repeat(barLength);
+            System.out.printf("%-10s | %-5d | %s%n", operator, total, bar);
+        }
+        System.out.println("Error per operator chart:");
+        for (Map.Entry<String, Double> entry : errorPercentagePerOperator.entrySet()) {
+            String operator = entry.getKey();
+            double percent = entry.getValue();
+            int barLength = (int) (percent / 2); // scale for visibility
+            String bar = "#".repeat(barLength);
+            System.out.printf("%-10s | %-5.2f%% | %s%n", operator, percent, bar);
+        }
+
+        System.out.println("Error percentage per operator: " + errorPercentagePerOperator);
         return result;
     }
 }

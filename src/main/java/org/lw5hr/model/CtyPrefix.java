@@ -1,4 +1,4 @@
-package org.lw5hr.adif.model;
+package org.lw5hr.model;
 
 public class CtyPrefix {
 

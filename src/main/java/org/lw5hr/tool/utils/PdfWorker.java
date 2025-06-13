@@ -1,10 +1,10 @@
-package org.lw5hr.adif.tool.utils;
+package org.lw5hr.tool.utils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.lw5hr.adif.model.CtyDat;
-import org.lw5hr.adif.model.Qso;
+import org.lw5hr.model.CtyDat;
+import org.lw5hr.model.Qso;
 
 import java.io.File;
 import java.io.IOException;

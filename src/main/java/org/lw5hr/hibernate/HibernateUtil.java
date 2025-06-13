@@ -1,4 +1,4 @@
-package org.lw5hr.adif.hibernate;
+package org.lw5hr.hibernate;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
@@ -6,7 +6,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 
-public class hibernateUtil {
+public class HibernateUtil {
     private static StandardServiceRegistry registry;
     private static SessionFactory sessionFactory;
 
@@ -14,7 +14,7 @@ public class hibernateUtil {
         if (sessionFactory == null) {
             try {
                 // Creating a registry
-                registry = new StandardServiceRegistryBuilder().configure("persisntece.xml").build();
+                registry = new StandardServiceRegistryBuilder().configure("META-INF/hibernate.cfg.xml").build();
 
                 // Create the MetadataSources
                 MetadataSources sources = new MetadataSources(registry);

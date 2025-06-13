@@ -1,4 +1,4 @@
-package org.lw5hr.adif.charts;
+package org.lw5hr.charts;
 
 import java.time.LocalDate;
 

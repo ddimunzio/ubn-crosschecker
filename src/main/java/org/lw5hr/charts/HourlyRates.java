@@ -30,7 +30,7 @@
  * 
  */
 
-package org.lw5hr.adif.charts;
+package org.lw5hr.charts;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
