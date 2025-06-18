@@ -5,7 +5,6 @@ UBN Crosschecker is a Java-based tool designed to analyze and process QSO (conta
 ## Features
 
 -   **Error Analysis**: Visualize error percentages by operator using pie charts.
--   **Rate Statistics**: Calculate the best hourly QSO rates for each operator.
 -   **Data Processing**: Group and analyze QSO data by various criteria.
 
 ## Technologies Used
