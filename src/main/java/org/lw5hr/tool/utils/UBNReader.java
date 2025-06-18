@@ -1,5 +1,6 @@
 package org.lw5hr.tool.utils;
 
+import org.lw5hr.model.OperatorErrorStats;
 import org.lw5hr.model.Qso;
 import org.lw5hr.model.UbnResult;
 
@@ -17,16 +18,16 @@ import java.util.stream.Collectors;
  * @author diego
  */
 public class UBNReader {
-    public List<String> readUbnFile(File filePath, List<Qso> qsos) {
+    public UbnResult readUbnFile(File filePath, List<Qso> qsos) {
         List<String> result = new ArrayList<>();
         UbnResult ubnResult = new UbnResult();
         BufferedReader reader;
         final Integer NIL = 1;
         final Integer INCORRECT_CALL = 2;
         final Integer INCORRECT_EXCHANGE_INFO = 3;
-        final Integer BAND_CHANGE_VIOLATION = 4;
+        final int BAND_CHANGE_VIOLATION = 4;
         final Integer UNIQUE_CALL = 5;
-        final Integer LOST_MULTI = 5;
+        final int LOST_MULTI = 5;
 
        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
         Integer currentReport = 0;
@@ -35,7 +36,7 @@ public class UBNReader {
             String line = reader.readLine();
 
             while (line != null) {
-                if (currentReport != 0 && line.length() > 0 && !line.startsWith("***")) {
+                if (currentReport != 0 && !line.isEmpty() && !line.startsWith("***")) {
                     List<String> ubnLine = Arrays.stream(line.split(" ")).filter(a -> a != "").toList();
                     LocalDateTime UbnDateTime = LocalDateTime.parse(ubnLine.get(2) + " " + ubnLine.get(3), formatter);
                     Optional<Qso> qso = qsos.stream()
@@ -47,6 +48,10 @@ public class UBNReader {
                             System.out.println(qso.get().toString() + "," + ubnLine.get(9));
                             result.add(qso.get().toString() + "," + ubnLine.get(9));
                             ubnResult.getIncorrectCall().add(qso.get());
+                        } else if (currentReport.equals(NIL)) {
+                            System.out.println(qso.get().toString() + "," + ubnLine.get(6));
+                            result.add(qso.get().toString() + "," + ubnLine.get(6));
+                            ubnResult.getNotInLog().add(qso.get());
                         } else if (currentReport.equals(INCORRECT_EXCHANGE_INFO)) {
                             System.out.println(qso.get().toString() + "," + ubnLine.get(7) + "," + ubnLine.get(9));
                             result.add(qso.get().toString() + "," + ubnLine.get(7) + "," + ubnLine.get(9));
@@ -58,47 +63,42 @@ public class UBNReader {
                     }
                 }
                 // read next line
-                line = reader.readLine();
-                if (line != null) {
-                    if (line.equalsIgnoreCase("************************* Not In Log *************************")) {
-                        System.out.println("************************* Not In Log *************************");
-                        result.add("************************* Not In Log *************************");
-                        currentReport = NIL;
-                        line = reader.readLine();
-                    } else if (line.equalsIgnoreCase("*********************** Incorrect Call ***********************")) {
-                        System.out.println("*********************** Incorrect Call ***********************");
-                        result.add("*********************** Incorrect Call ***********************");
-                        currentReport = INCORRECT_CALL;
-                        line = reader.readLine();
-                    } else if (line.equalsIgnoreCase("*************** Incorrect Exchange Information ***************")) {
-                        System.out.println("*************** Incorrect Exchange Information ***************");
-                        result.add("*************** Incorrect Exchange Information ***************");
-                        currentReport = INCORRECT_EXCHANGE_INFO;
-                        line = reader.readLine();
-                    } else if (line.equalsIgnoreCase("******************* Band Change Violations *******************")) {
-                        System.out.println("******************* Band Change Violations *******************");
-                        result.add("******************* Band Change Violations *******************");
-                        currentReport = BAND_CHANGE_VIOLATION;
-                        ;
-                        line = reader.readLine();
-                    } else if (line.equalsIgnoreCase("********* Unique Calls Receiving Credit (not removed)*********")) {
-                        System.out.println("********* Unique Calls Receiving Credit (not removed)*********");
-                        result.add("********* Unique Calls Receiving Credit (not removed)*********");
-                        currentReport = BAND_CHANGE_VIOLATION;
+                if (line.equalsIgnoreCase("************************* Not In Log *************************")) {
+                    System.out.println("************************* Not In Log *************************");
+                    result.add("************************* Not In Log *************************");
+                    currentReport = NIL;
+                    line = reader.readLine();
+                } else if (line.equalsIgnoreCase("*********************** Incorrect Call ***********************")) {
+                    System.out.println("*********************** Incorrect Call ***********************");
+                    result.add("*********************** Incorrect Call ***********************");
+                    currentReport = INCORRECT_CALL;
 
-                        line = reader.readLine();
-                    } else if (line.equalsIgnoreCase("********************** Lost Multipliers **********************")) {
-                        System.out.println("********************** Lost Multipliers **********************");
-                        currentReport = LOST_MULTI;
-                        ;
-                        line = reader.readLine();
-                    } else if (line.equalsIgnoreCase("*******************  Multipliers by Band  ********************")) {
-                        currentReport = 0;
-                    }  else if (line.equalsIgnoreCase("************************ Multipliers *************************")){
-                        currentReport = 0;
-                    }
+                } else if (line.equalsIgnoreCase("*************** Incorrect Exchange Information ***************")) {
+                    System.out.println("*************** Incorrect Exchange Information ***************");
+                    result.add("*************** Incorrect Exchange Information ***************");
+                    currentReport = INCORRECT_EXCHANGE_INFO;
 
+                } else if (line.equalsIgnoreCase("******************* Band Change Violations *******************")) {
+                    System.out.println("******************* Band Change Violations *******************");
+                    result.add("******************* Band Change Violations *******************");
+                    currentReport = BAND_CHANGE_VIOLATION;
+
+                } else if (line.equalsIgnoreCase("********* Unique Calls Receiving Credit (not removed)*********")) {
+                    System.out.println("********* Unique Calls Receiving Credit (not removed)*********");
+                    result.add("********* Unique Calls Receiving Credit (not removed)*********");
+                    currentReport = BAND_CHANGE_VIOLATION;
+
+
+                } else if (line.equalsIgnoreCase("********************** Lost Multipliers **********************")) {
+                    System.out.println("********************** Lost Multipliers **********************");
+                    currentReport = LOST_MULTI;
+
+                } else if (line.equalsIgnoreCase("*******************  Multipliers by Band  ********************")) {
+                    currentReport = 0;
+                } else if (line.equalsIgnoreCase("************************ Multipliers *************************")) {
+                    currentReport = 0;
                 }
+                line = reader.readLine();
 
             }
             reader.close();
@@ -115,6 +115,7 @@ public class UBNReader {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+        ubnResult.setTotalByOperator(totalByOperator);
         System.out.println("Total per operator: " + totalByOperator);
 
        Map<String, Long> incorrectCallPerOperator = ubnResult.getIncorrectCall().stream()
@@ -147,9 +148,16 @@ public class UBNReader {
             long total = totalByOperator.getOrDefault(operator, 0L);
             long invalidCalls = incorrectCallPerOperator.getOrDefault(operator, 0L);
             long badExchanges = exchangePerOperator.getOrDefault(operator, 0L);
-            long totalErrors = invalidCalls + badExchanges;
+            long notInLog = ubnResult.getNotInLog().stream()
+                .filter(qso -> qso.getOperator().equalsIgnoreCase(operator))
+                .count();
+            long totalErrors = invalidCalls + badExchanges + notInLog;
             double percentage = total > 0 ? (totalErrors * 100.0) / total : 0.0;
             errorPercentagePerOperator.put(operator, percentage);
+            OperatorErrorStats operatorErrorStats = new OperatorErrorStats(
+                    operator, total, invalidCalls, badExchanges, notInLog, totalErrors, percentage
+            );
+            ubnResult.getOperatorErrorStats().add(operatorErrorStats);
         }
 
         System.out.println("Invalid Calls per operator chart:");
@@ -188,7 +196,7 @@ public class UBNReader {
         }
 
         System.out.println("Error percentage per operator: " + errorPercentagePerOperator);
-        return result;
+        return ubnResult;
     }
 }
 
