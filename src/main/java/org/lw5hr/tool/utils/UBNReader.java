@@ -159,7 +159,7 @@ public class UBNReader {
             );
             ubnResult.getOperatorErrorStats().add(operatorErrorStats);
         }
-
+/***
         System.out.println("Invalid Calls per operator chart:");
         for (Map.Entry<String, Long> entry : incorrectCallPerOperator.entrySet()) {
             String operator = entry.getKey();
@@ -194,6 +194,7 @@ public class UBNReader {
             String bar = "#".repeat(barLength);
             System.out.printf("%-10s | %-5.2f%% | %s%n", operator, percent, bar);
         }
+        **/
 
         System.out.println("Error percentage per operator: " + errorPercentagePerOperator);
         return ubnResult;

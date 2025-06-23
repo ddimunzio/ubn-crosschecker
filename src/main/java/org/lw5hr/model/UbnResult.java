@@ -9,8 +9,8 @@ public class UbnResult
     private ArrayList<Qso> notInLog = new ArrayList<>();
     private ArrayList<Qso> incorrectCall = new ArrayList<>();
     private ArrayList<Qso> incorrectExchangeInfo = new ArrayList<>();
-    Map<String, Long> totalByOperator;
-    List<OperatorErrorStats> operatorErrorStats = new ArrayList<>();
+    private Map<String, Long> totalByOperator;
+    private List<OperatorErrorStats> operatorErrorStats = new ArrayList<>();
 
     public ArrayList<Qso> getNotInLog() {
         return notInLog;

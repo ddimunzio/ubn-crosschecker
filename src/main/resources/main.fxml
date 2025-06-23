@@ -30,12 +30,12 @@
        </MenuBar>
    </top>
    <left>
-       <Pane prefHeight="975.0" prefWidth="710.0" BorderPane.alignment="CENTER">
+       <Pane prefHeight="975.0" prefWidth="746.0" BorderPane.alignment="CENTER">
            <BorderPane.margin>
                <Insets right="10.0" />
            </BorderPane.margin>
           <children>
-              <BarChart fx:id="nil" layoutX="3.0" layoutY="224.0" prefHeight="260.0" prefWidth="702.0" title="Not In Log By Operator">
+              <BarChart fx:id="nil" layoutX="3.0" layoutY="191.0" prefHeight="260.0" prefWidth="702.0" title="Not In Log By Operator">
                   <xAxis>
                       <CategoryAxis side="BOTTOM" />
                   </xAxis>
@@ -46,7 +46,7 @@
                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
               </BarChart>
-              <BarChart fx:id="badExchange" layoutX="14.0" layoutY="464.0" prefHeight="234.0" prefWidth="678.0" title="Bad Exchange By Operator">
+              <BarChart fx:id="badExchange" layoutX="14.0" layoutY="456.0" prefHeight="234.0" prefWidth="678.0" title="Bad Exchange By Operator">
                   <xAxis>
                       <CategoryAxis side="BOTTOM" />
                   </xAxis>
@@ -57,7 +57,7 @@
                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
               </BarChart>
-              <BarChart fx:id="invalidCalls" layoutX="22.0" layoutY="718.0" prefHeight="234.0" prefWidth="651.0" title="Invalid Calls By Operator">
+              <BarChart fx:id="invalidCalls" layoutX="22.0" layoutY="710.0" prefHeight="234.0" prefWidth="651.0" title="Invalid Calls By Operator">
                   <xAxis>
                       <CategoryAxis side="BOTTOM" />
                   </xAxis>
@@ -68,7 +68,7 @@
                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
               </BarChart>
-              <Pane layoutX="191.0" layoutY="24.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="328.0">
+              <Pane layoutX="22.0" layoutY="14.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="180.0" prefWidth="328.0">
                  <children>
                      <Button fx:id="run" layoutX="251.0" layoutY="133.0" mnemonicParsing="false" onAction="#handleRun" prefHeight="25.0" prefWidth="59.0" text="RUN" />
                      <TextField fx:id="ubnPathField" disable="true" layoutX="21.0" layoutY="75.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="226.0">
@@ -89,9 +89,9 @@
        </Pane>
    </left>
    <center>
-      <Pane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <Pane pickOnBounds="false" prefHeight="975.0" prefWidth="926.0" BorderPane.alignment="CENTER">
          <children>
-            <BarChart fx:id="totalByOp" layoutX="1.0" prefHeight="400.0" prefWidth="740.0" title="Total QSOs By Operator">
+            <BarChart fx:id="totalByOp" layoutX="79.0" prefHeight="506.0" prefWidth="799.0" title="Total QSOs By Operator">
                <xAxis>
                   <CategoryAxis side="BOTTOM" />
                </xAxis>
@@ -99,16 +99,16 @@
                   <NumberAxis side="LEFT" />
                </yAxis>
                <padding>
-                  <Insets bottom="20.0" left="15.0" />
+                  <Insets left="15.0" />
                </padding>
             </BarChart>
-            <PieChart fx:id="ErrorPercentageByOP" layoutY="488.0" minHeight="-Infinity" prefHeight="444.0" prefWidth="755.0" title="Total Error Percentage By Operator">
+            <PieChart fx:id="ErrorPercentageByOP" layoutX="118.0" layoutY="570.0" minHeight="-Infinity" prefHeight="400.0" prefWidth="758.0" title="Total Error Percentage By Operator">
                <padding>
                   <Insets left="10.0" top="10.0" />
                </padding>
             </PieChart>
-            <Label layoutX="26.0" layoutY="420.0" text="and the total errors made based on the UBN report" textFill="#024a04" />
-            <Label layoutX="25.0" layoutY="403.0" text="The chart shows percentages taking the total qsos for each operator " textFill="#024a04">
+            <Label layoutX="206.0" layoutY="537.0" text="and the total errors made based on the UBN report" textFill="#024a04" />
+            <Label layoutX="205.0" layoutY="520.0" text="The chart shows percentages taking the total qsos for each operator " textFill="#024a04">
                <font>
                   <Font name="Consolas" size="12.0" />
                </font>
