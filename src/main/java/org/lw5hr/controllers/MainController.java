@@ -1,6 +1,7 @@
 package org.lw5hr.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,6 +11,8 @@ import org.lw5hr.model.Qso;
 import org.lw5hr.model.UbnResult;
 import org.lw5hr.tool.utils.ADIFReader;
 import org.lw5hr.tool.utils.UBNReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -20,6 +23,8 @@ import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -95,18 +100,60 @@ public class MainController {
     }
 
     @FXML
-    private void handleRun(ActionEvent event) throws Exception {
-        ADIFReader reader = new ADIFReader(ADIFFile.getAbsolutePath());
-        UBNReader ubnReader = new UBNReader();
-        UbnResult UbnResult = ubnReader.readUbnFile(new File(UBNFile.getAbsolutePath()), reader.read());
-        populateErrorPercentageByOP(UbnResult);
-        populateNilBarChart(UbnResult);
-        populateBadExchangeBarChart(UbnResult);
-        populateInvalidCalls(UbnResult);
-        populateTotalByOpBarChart(UbnResult);
-        //RateStats rateStats = new RateStats();
-        //rateStats.bestHourlyRateByOperator(reader.read());
-
+    private void handleRun(ActionEvent event) {
+        try {
+            // Validate that both files have been selected
+            if (ADIFFile == null) {
+                showErrorAlert("Missing ADIF File", "Please select an ADIF file before running.");
+                return;
+            }
+            
+            if (UBNFile == null) {
+                showErrorAlert("Missing UBN File", "Please select a UBN file before running.");
+                return;
+            }
+            
+            // Validate that the files exist and are readable
+            if (!ADIFFile.exists() || !ADIFFile.canRead()) {
+                showErrorAlert("Invalid ADIF File", "The selected ADIF file does not exist or cannot be read.");
+                return;
+            }
+            
+            if (!UBNFile.exists() || !UBNFile.canRead()) {
+                showErrorAlert("Invalid UBN File", "The selected UBN file does not exist or cannot be read.");
+                return;
+            }
+            
+            // Process the files
+            ADIFReader reader = new ADIFReader(ADIFFile.getAbsolutePath());
+            UBNReader ubnReader = new UBNReader();
+            UbnResult ubnResult = ubnReader.readUbnFile(UBNFile, reader.read());
+            
+            // Update the UI with the results
+            populateErrorPercentageByOP(ubnResult);
+            populateNilBarChart(ubnResult);
+            populateBadExchangeBarChart(ubnResult);
+            populateInvalidCalls(ubnResult);
+            populateTotalByOpBarChart(ubnResult);
+            
+        } catch (Exception e) {
+            showErrorAlert("Error Processing Files", 
+                    "An error occurred while processing the files: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Shows an error alert dialog with the specified title and message.
+     * 
+     * @param title The title of the alert
+     * @param message The message to display
+     */
+    private void showErrorAlert(String title, String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
 
@@ -196,6 +243,7 @@ public class MainController {
         totalByOp.getData().clear();
         totalByOp.setCategoryGap(0.5);
         totalByOp.setBarGap(0.5);
+
         createSeries(ubnResult.getTotalByOperator(), totalByOp);
     }
 
