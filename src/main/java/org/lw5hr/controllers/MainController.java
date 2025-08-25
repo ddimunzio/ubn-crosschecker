@@ -1,7 +1,20 @@
+/*
+ * UBN Cross Checker - Amateur Radio Contest Log Analysis Tool
+ *
+ * Copyright (c) 2025 LW5HR
+ *
+ * This software is provided free of charge for the amateur radio community.
+ * Feel free to use, modify, and distribute.
+ *
+ * @author LW5HR
+ * @version 1.0
+ * @since 2025
+ *
+ * 73!
+ */
 package org.lw5hr.controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,12 +24,8 @@ import org.lw5hr.model.Qso;
 import org.lw5hr.model.UbnResult;
 import org.lw5hr.tool.utils.ADIFReader;
 import org.lw5hr.tool.utils.UBNReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;

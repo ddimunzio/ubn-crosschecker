@@ -1,6 +1,16 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * UBN Cross Checker - Amateur Radio Contest Log Analysis Tool
+ *
+ * Copyright (c) 2025 LW5HR
+ *
+ * This software is provided free of charge for the amateur radio community.
+ * Feel free to use, modify, and distribute.
+ *
+ * @author LW5HR
+ * @version 1.0
+ * @since 2025
+ *
+ * 73!
  */
 package org.lw5hr.tool.utils;
 

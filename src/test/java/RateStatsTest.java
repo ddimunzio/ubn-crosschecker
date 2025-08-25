@@ -1,3 +1,17 @@
+/*
+ * UBN Cross Checker - Amateur Radio Contest Log Analysis Tool
+ *
+ * Copyright (c) 2025 LW5HR
+ *
+ * This software is provided free of charge for the amateur radio community.
+ * Feel free to use, modify, and distribute.
+ *
+ * @author LW5HR
+ * @version 1.0
+ * @since 2025
+ *
+ * 73!
+ */
 import org.junit.jupiter.api.Test;
 import org.lw5hr.model.Qso;
 import org.lw5hr.tool.utils.RateStats;
