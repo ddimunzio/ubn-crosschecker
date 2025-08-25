@@ -29,6 +29,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.stage.FileChooser;
+import javafx.scene.chart.CategoryAxis;
 
 public class MainController {
     @FXML
@@ -158,12 +159,30 @@ public class MainController {
 
 
     private void createSeries(Map<String, Long> counts, BarChart<String, Number> chart) {
+        // Clear existing data first
+        chart.getData().clear();
+
+        // Create separate series for each operator to maintain color differentiation
         for (Map.Entry<String, Long> entry : counts.entrySet()) {
             XYChart.Series<String, Number> series = new XYChart.Series<>();
             series.setName(entry.getKey());
             series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
             chart.getData().add(series);
         }
+
+        // Configure category axis to properly display all labels and bars
+        if (chart.getXAxis() instanceof CategoryAxis) {
+            CategoryAxis categoryAxis = (CategoryAxis) chart.getXAxis();
+            categoryAxis.setAutoRanging(true);
+            categoryAxis.setGapStartAndEnd(true); // Changed to true to ensure proper spacing
+            categoryAxis.setTickLabelRotation(45); // Rotate labels to prevent overlap
+        }
+
+        // Force chart layout refresh after configuration
+        chart.setAnimated(false);
+        chart.applyCss();
+        chart.layout();
+        chart.requestLayout();
     }
 
     // Java
@@ -245,6 +264,33 @@ public class MainController {
         totalByOp.setBarGap(0.5);
 
         createSeries(ubnResult.getTotalByOperator(), totalByOp);
+    }
+
+    @FXML
+    private void handleAbout(ActionEvent event) {
+        Alert aboutAlert = new Alert(AlertType.INFORMATION);
+        aboutAlert.setTitle("About UBN Cross Checker");
+        aboutAlert.setHeaderText("UBN Cross Checker v1.0");
+
+        String aboutText = "This application was developed by LW5HR for the free use and distribution of ham radio operators.\n\n" +
+                          "UBN Cross Checker helps analyze UBN (Unique, Busted, NIL) reports from amateur radio contests " +
+                          "by cross-referencing them with ADIF log files to provide detailed statistics and visualizations.\n\n" +
+                          "Features:\n" +
+                          "• Cross-reference UBN reports with ADIF logs\n" +
+                          "• Generate statistics by operator\n" +
+                          "• Visualize errors with interactive charts\n" +
+                          "• Export results and analysis\n\n" +
+                          "This software is provided free of charge for the amateur radio community.\n" +
+                          "Feel free to use, modify, and distribute.\n\n" +
+                          "73!\n" +
+                          "LW5HR";
+
+        aboutAlert.setContentText(aboutText);
+        aboutAlert.setResizable(true);
+        aboutAlert.getDialogPane().setPrefWidth(500);
+        aboutAlert.getDialogPane().setPrefHeight(400);
+
+        aboutAlert.showAndWait();
     }
 
 }
